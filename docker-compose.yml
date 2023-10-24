@@ -1,0 +1,41 @@
+version: '3'
+services:
+  postgres:
+    image: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: alembic_postgres
+    volumes:
+      - ./init_postgres.sql:/docker-entrypoint-initdb.d/init_postgres.sql
+      - postgres_db:/var/lib/postgresql/data
+
+  mysql:
+    image: mysql
+    healthcheck:
+      test: [ "CMD", "mysqladmin" ,"ping", "-h", "localhost" ]
+      timeout: 20s
+      interval: 5s
+      retries: 10
+    restart: always
+    environment:
+      MYSQL_DATABASE: alembic_mysql
+      MYSQL_USER: user
+      MYSQL_PASSWORD: password
+      MYSQL_ROOT_PASSWORD: password
+    ports:
+      - '3307:3306'
+    volumes:
+      - ./init_mysql.sql:/docker-entrypoint-initdb.d/init_mysql.sql
+      - mysql_db:/var/lib/mysql
+
+volumes:
+  mysql_db:
+  postgres_db:
