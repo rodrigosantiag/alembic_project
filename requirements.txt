@@ -2,3 +2,5 @@ alembic==1.12.0
 python-dateutil==2.8.2
 SQLAlchemy==2.0.22
 psycopg2==2.9.9
+pymysql==1.1.0
+ipython==8.16.1

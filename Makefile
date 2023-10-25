@@ -18,7 +18,7 @@ all:
 
 .env:
 	echo 'PYTHONPATH="$(PYTHONPATH)"' > .env
-	#cat .env_sample >> .env
+	cat .env_sample >> .env
 
 .venv:
 	python3.11 -m venv $(VIRTUALENV)

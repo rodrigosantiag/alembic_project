@@ -1,5 +1,21 @@
 version: '3'
 services:
+  console:
+    build: .
+    env_file: .env
+    command: bash -c "ipython"
+    volumes:
+      - .:/app
+    ports:
+      - "8000:8000"
+    stdin_open: true
+    tty: true
+    depends_on:
+      - postgres
+      - postgres_disbursment
+      - mysql
+    restart: always
+
   postgres:
     image: postgres
     healthcheck:
@@ -10,12 +26,29 @@ services:
     ports:
       - "5434:5432"
     environment:
-      POSTGRES_USER: postgres
+      POSTGRES_USER: migration_user
       POSTGRES_PASSWORD: password
-      POSTGRES_DB: alembic_postgres
+      POSTGRES_DB: general_postgres
     volumes:
       - ./init_postgres.sql:/docker-entrypoint-initdb.d/init_postgres.sql
-      - postgres_db:/var/lib/postgresql/data
+      - postgres_db_general:/var/lib/postgresql/data
+
+  postgres_disbursment:
+    image: postgres
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5435:5432"
+    environment:
+      POSTGRES_USER: migration_user
+      POSTGRES_PASSWORD: password
+      POSTGRES_DB: disbursement_postgres
+    volumes:
+      - ./init_disbursement.sql:/docker-entrypoint-initdb.d/init_disbursement_postgres.sql
+      - postgres_db_disbursement:/var/lib/postgresql/data
 
   mysql:
     image: mysql
@@ -26,8 +59,8 @@ services:
       retries: 10
     restart: always
     environment:
-      MYSQL_DATABASE: alembic_mysql
-      MYSQL_USER: user
+      MYSQL_DATABASE: mysql_database
+      MYSQL_USER: migration_user
       MYSQL_PASSWORD: password
       MYSQL_ROOT_PASSWORD: password
     ports:
@@ -38,4 +71,5 @@ services:
 
 volumes:
   mysql_db:
-  postgres_db:
+  postgres_db_general:
+  postgres_db_disbursement:
