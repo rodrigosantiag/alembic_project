@@ -3,7 +3,7 @@ services:
   console:
     build: .
     env_file: .env
-    command: bash -c "ipython"
+    command: bash
     volumes:
       - .:/app
     ports:

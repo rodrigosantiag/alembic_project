@@ -2,9 +2,7 @@ FROM python:3.11
 
 WORKDIR /app
 
-COPY requirements.txt .
-COPY src .
-COPY Makefile .
+COPY . .
 
 RUN make install
 
